@@ -1,15 +1,33 @@
-// ignore_for_file: unnecessary_underscores
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../utils/app_keys.dart';
+import '../controllers/expense_controller.dart';
 import '../utils/app_colors.dart';
+import '../utils/app_keys.dart';
 import 'main_screen.dart';
+import 'widgets/edit_name_dialog.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key});
+
+  Future<void> _getStarted() async {
+    final name = await Get.dialog<String>(
+      const EditNameDialog(
+        initial: '',
+        title: 'What should we call you?',
+        cancelText: 'Skip',
+      ),
+      barrierDismissible: false,
+    );
+    if (name != null && name.isNotEmpty) {
+      await Get.find<ExpenseController>().updateName(name);
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(AppKeys.onboardingSeen, true);
+    Get.off(() => const MainScreen());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,11 +46,14 @@ class OnboardingScreen extends StatelessWidget {
                   child: Image.asset(
                     'assets/images/asset_onboarding.png',
                     fit: BoxFit.contain,
-                    errorBuilder: (_, __, ___) => const Icon(
-                      Icons.person,
-                      size: 120,
-                      color: AppColors.primary,
-                    ),
+                    errorBuilder: (_, error, __) {
+                      debugPrint('Onboarding image failed: $error');
+                      return const Icon(
+                        Icons.person,
+                        size: 120,
+                        color: AppColors.primary,
+                      );
+                    },
                   ),
                 ),
               ),
@@ -62,11 +83,7 @@ class OnboardingScreen extends StatelessWidget {
                       width: double.infinity,
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: () async {
-                          final prefs = await SharedPreferences.getInstance();
-                          await prefs.setBool(AppKeys.onboardingSeen, true);
-                          Get.off(() => const MainScreen());
-                        },
+                        onPressed: _getStarted,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,

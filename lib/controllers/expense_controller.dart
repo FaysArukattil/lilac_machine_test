@@ -13,7 +13,7 @@ import '../utils/app_keys.dart';
 import '../utils/snackbar_helper.dart';
 
 class ExpenseController extends GetxController {
-  static const _defaultName = 'Sahal Muhammed';
+  static const _defaultName = 'Enter Your Name';
 
   final DatabaseHelper _db = DatabaseHelper.instance;
 

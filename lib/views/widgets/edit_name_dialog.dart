@@ -2,8 +2,15 @@ import 'package:flutter/material.dart';
 
 class EditNameDialog extends StatefulWidget {
   final String initial;
+  final String title;
+  final String cancelText;
 
-  const EditNameDialog({super.key, required this.initial});
+  const EditNameDialog({
+    super.key,
+    required this.initial,
+    this.title = 'Edit name',
+    this.cancelText = 'Cancel',
+  });
 
   @override
   State<EditNameDialog> createState() => _EditNameDialogState();
@@ -16,7 +23,7 @@ class _EditNameDialogState extends State<EditNameDialog> {
 
   @override
   void dispose() {
-    _ctrl.dispose(); // safe: the dialog widget owns it
+    _ctrl.dispose();
     super.dispose();
   }
 
@@ -29,7 +36,7 @@ class _EditNameDialogState extends State<EditNameDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Edit name'),
+      title: Text(widget.title),
       content: TextField(
         controller: _ctrl,
         autofocus: true,
@@ -40,7 +47,7 @@ class _EditNameDialogState extends State<EditNameDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(widget.cancelText),
         ),
         TextButton(onPressed: _save, child: const Text('Save')),
       ],

@@ -2,8 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../utils/app_colors.dart';
+import '../utils/app_keys.dart';
+import 'main_screen.dart';
 import 'onboarding_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -19,9 +22,14 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _timer = Timer(const Duration(seconds: 2), () {
-      Get.off(() => const OnboardingScreen());
-    });
+    _timer = Timer(const Duration(seconds: 2), _next);
+  }
+
+  Future<void> _next() async {
+    final prefs = await SharedPreferences.getInstance();
+    final seen = prefs.getBool(AppKeys.onboardingSeen) ?? false;
+    if (!mounted) return;
+    Get.off(() => seen ? const MainScreen() : const OnboardingScreen());
   }
 
   @override
